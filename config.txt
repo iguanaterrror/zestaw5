@@ -1,0 +1,9 @@
+30 - canvas height
+20 - canvas width
+name - name of the file
+. - empty pixel
+rectangle 5 6 2 3 * - figure
+square 10 12 4 & - figure
+
+
+
