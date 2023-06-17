@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 
+//klasa Canvas tworzy obszar na ktory beda dodawane figury
 class Canvas{
     private:
         int width;
@@ -11,7 +12,7 @@ class Canvas{
         std::vector<std::vector<char>> canvas;
 
     public:
-    
+        //rysuje obszar o okreslonych wymiarach
         Canvas(int w, int h, char c) : width(w), height(h), emptyPixel(c){
             canvas.resize(height + 2, std::vector<char>(width + 2, ' '));
             for(int y = 0; y < height + 2; y++){
@@ -28,13 +29,13 @@ class Canvas{
                 }
             }
         }
-        
+        //rysuje pixel w okreslonym miejscu na canvasie
         void drawPixel(int x, int y, char c){
             if(x >= 0 && x <= width + 2 && y >= 0 && y <= height + 2){
                 canvas[x + 1][y + 1] = c;
             }
         }
-
+        //zapisuje canvas do pliku
         void toFile(std::ofstream& file){
             for(const auto& row : canvas){
                 for(const auto &pixel : row){
@@ -45,12 +46,13 @@ class Canvas{
         }
         
 };
-
+//abstrakcyjna klasa figure z ktorej dziedzicza pozostale
 class Figure{
     public:
         virtual void draw(Canvas& canvas) = 0;
+        ~Figure(){}
 };
-
+//klasa tworzaca prostokat
 class Rectangle : public Figure{
     private:
         int x;
@@ -61,6 +63,7 @@ class Rectangle : public Figure{
     public:
         Rectangle(int x, int y, int a, int b, char c) : x(x), y(y), a(a), b(b), pixel(c){}
         ~Rectangle(){}
+        //rysuje prostokat
         virtual void draw(Canvas &canvas) override {
             for(int i = x; i < x + a; i++){
                 for(int j = y; j < y + b; j++){
@@ -69,13 +72,14 @@ class Rectangle : public Figure{
             }
         }
 };
-
+//klasa tworzaca kwadrat dziedziczaca z klasy prostokat
 class Square : public Rectangle{
     public:
         Square(int x, int y, int a, char c) : Rectangle(x, y, a, a, c){}
 
 };
 
+//klasa tworzaca kolo
 class Circle : public Figure{
     private:
         int x;
@@ -83,6 +87,7 @@ class Circle : public Figure{
         int r;
         char pixel;
 
+        //sprawdza czy pixel znajduje sie w okregu
         bool isInside(int m, int n){
             int dx = m - x;
             int dy = n - y;
@@ -102,6 +107,7 @@ class Circle : public Figure{
         }
 };
 
+//odczytuje dane o figurach z pliku konfiguracyjnego i rysuje je na canvasie
 void figureFromFile(std::vector<std::string> info, Canvas &canvas){
     if(info[0] == "rectangle"){
         int x = stoi(info[1]);
@@ -135,6 +141,7 @@ void figureFromFile(std::vector<std::string> info, Canvas &canvas){
     }
 }
 
+//wczytuje plik konfiguracyjny i wyciaga z niego informacje
 void drawFromFile(std::ifstream &configFile){
     std::vector<std::string> data;
     std::string line;
@@ -176,6 +183,7 @@ void drawFromFile(std::ifstream &configFile){
 
     }
 
+    //zapisuje rysunki odczytane z pliku konfiguracyjnego do pliku tekstowego
     std::string saveFileName = data[2] + ".txt";
     std::ofstream saveFile(saveFileName.c_str());
     canvas.toFile(saveFile);
@@ -183,7 +191,7 @@ void drawFromFile(std::ifstream &configFile){
 }
 
 int main(int argc, char **argv){
-
+    //sprawdza czy zostal podany plik
     if(argc < 2){
         std::cerr << "brak pliku\n";
         return 1;
