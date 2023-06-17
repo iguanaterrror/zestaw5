@@ -1,6 +1,6 @@
 
 
-# zestaw5, Dominik Szubartowski
+# ASCII renderer
 
 
 Zadanie na pracownie c++.
