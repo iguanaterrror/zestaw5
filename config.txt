@@ -1,9 +1,7 @@
-30 - canvas height
-20 - canvas width
-name - name of the file
+40 - canvas height
+40 - canvas width
+save - name of the file
 . - empty pixel
-rectangle 5 6 2 3 * - figure
-square 10 12 4 & - figure
-
-
-
+rectangle 3 6 3 10 * - figure name, x, y, a/r, b(if rectangle), pixel 
+square 5 12 4 & - figure name, x, y, a/r, b(if rectangle), pixel 
+circle 10 10 3 0 - figure name, x, y, a/r, b(if rectangle), pixel 

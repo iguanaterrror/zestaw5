@@ -35,12 +35,12 @@ class Canvas{
             }
         }
 
-        void display(){
+        void toFile(std::ofstream& file){
             for(const auto& row : canvas){
                 for(const auto &pixel : row){
-                    std::cout << pixel;
+                    file << pixel;
                 }
-                std::cout << std::endl;
+                file << std::endl;
             }
         }
         
@@ -60,7 +60,7 @@ class Rectangle : public Figure{
         char pixel;
     public:
         Rectangle(int x, int y, int a, int b, char c) : x(x), y(y), a(a), b(b), pixel(c){}
-
+        ~Rectangle(){}
         virtual void draw(Canvas &canvas) override {
             for(int i = x; i < x + a; i++){
                 for(int j = y; j < y + b; j++){
@@ -92,9 +92,9 @@ class Circle : public Figure{
         Circle(int x, int y, int r, char c) : x(x), y(y), r(r), pixel(c){}
 
         void draw(Canvas &canvas) override {
-           for(int i = y - r; y <= y + r; y++){
-                for(int j = x - r; j <= x + r; x++){
-                    if(isInside(x, y)){
+           for(int i = y - r; i <= y + r; i++){
+                for(int j = x - r; j <= x + r; j++){
+                    if(isInside(i, j)){
                         canvas.drawPixel(i, j, pixel);
                     }
                 }
@@ -102,7 +102,7 @@ class Circle : public Figure{
         }
 };
 
-Canvas figureFromFile(std::vector<std::string> info, Canvas &canvas){
+void figureFromFile(std::vector<std::string> info, Canvas &canvas){
     if(info[0] == "rectangle"){
         int x = stoi(info[1]);
         int y = stoi(info[2]);
@@ -112,7 +112,6 @@ Canvas figureFromFile(std::vector<std::string> info, Canvas &canvas){
 
         Rectangle r(x, y, a, b, pixel);
         r.draw(canvas);
-        return canvas;
     }
 
     else if(info[0] == "square"){
@@ -122,8 +121,7 @@ Canvas figureFromFile(std::vector<std::string> info, Canvas &canvas){
         char pixel = info[4][0];
 
         Square s(x, y, a, pixel);
-        s.draw(canvas);
-        return canvas;        
+        s.draw(canvas);       
     }
     else if(info[0] == "circle"){
         int x = stoi(info[1]);
@@ -135,22 +133,14 @@ Canvas figureFromFile(std::vector<std::string> info, Canvas &canvas){
         c.draw(canvas);
 
     }
-
-    return canvas;
 }
 
-int main(int argc, char **argv){
-    if(argc > 2){
-        std::cerr << "brak pliku\n";
-    }
-
-    std::ifstream file(argv[1]);
-
+void drawFromFile(std::ifstream &configFile){
     std::vector<std::string> data;
     std::string line;
 
-    if(file){
-        while(getline(file, line)){
+    if(configFile){
+        while(getline(configFile, line)){
             std::string temp = "";
             for(int i = 0; i < line.length(); i++){
                 if(line[i] != '-'){
@@ -167,10 +157,10 @@ int main(int argc, char **argv){
     char emptyPixel = data[3][0];
     Canvas canvas(width, height, emptyPixel);
 
-    for(int i = 3; i <= data.size(); i++){
+    for(int i = 4; i < data.size(); i++){
         std::vector<std::string> info;
         std::string temp = "";
-
+        
         for(int j = 0; j < data[i].length(); j++){
             if(data[i][j] != ' '){
                 temp += data[i][j];
@@ -180,16 +170,30 @@ int main(int argc, char **argv){
                 temp = "";
             }
         }
-        canvas = figureFromFile(info, canvas);
+        figureFromFile(info, canvas);
 
         info.clear();
 
     }
 
+    std::string saveFileName = data[2] + ".txt";
+    std::ofstream saveFile(saveFileName.c_str());
+    canvas.toFile(saveFile);
+    saveFile.close();
+}
 
-    canvas.display();
-    
+int main(int argc, char **argv){
 
-    
+    if(argc < 2){
+        std::cerr << "brak pliku\n";
+        return 1;
+    }
+
+    std::ifstream configFile(argv[1]);
+
+    drawFromFile(configFile);
+
+    configFile.close();
+
     return 0;
 }
