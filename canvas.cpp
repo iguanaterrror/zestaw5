@@ -99,8 +99,8 @@ class Circle : public Figure{
         void draw(Canvas &canvas) override {
            for(int i = y - r; i <= y + r; i++){
                 for(int j = x - r; j <= x + r; j++){
-                    if(isInside(i, j)){
-                        canvas.drawPixel(i, j, pixel);
+                    if(isInside(j, i)){
+                        canvas.drawPixel(j, i, pixel);
                     }
                 }
            } 
